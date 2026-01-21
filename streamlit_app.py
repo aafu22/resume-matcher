@@ -30,7 +30,8 @@ if st.button("✅ Match Resume"):
                     "job_description": job_description
                 }
 
-                response = requests.post(FASTAPI_URL, files=files, data=data)
+                response = requests.post(FASTAPI_URL, files=files, data=data, timeout=120)
+
 
                 if response.status_code == 200:
                     result = response.json()
