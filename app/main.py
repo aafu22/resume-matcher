@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import shutil
 
@@ -7,24 +8,35 @@ from app.utils import calculate_similarity, extract_text_from_pdf
 
 app = FastAPI(title="AI Resume Screening API")
 
+# ✅ allow frontend connection (Streamlit)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # ok for demo
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/")
 def home():
-    return {"message": "Resume Matching API is running"}
+    return {"message": "Resume Matching API is running ✅"}
 
-# Old endpoint (text-based)
+# ✅ Text-based endpoint
 @app.post("/match_resume", response_model=ResumeResponse)
 def match_resume(data: ResumeRequest):
     score, level = calculate_similarity(data.resume_text, data.job_description)
-    return ResumeResponse(match_score=score, match_level=level)
 
+    return ResumeResponse(
+        match_score=score,
+        match_level=level
+    )
 
-# ✅ NEW endpoint (PDF Resume upload)
+# ✅ PDF-based endpoint
 @app.post("/match_resume_pdf", response_model=ResumeResponse)
 async def match_resume_pdf(
     job_description: str = Form(...),
     resume_file: UploadFile = File(...)
 ):
-    # Save uploaded PDF temporarily
     temp_folder = "temp"
     os.makedirs(temp_folder, exist_ok=True)
 
@@ -33,10 +45,11 @@ async def match_resume_pdf(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(resume_file.file, buffer)
 
-    # Extract text from PDF
     resume_text = extract_text_from_pdf(file_path)
 
-    # Match
     score, level = calculate_similarity(resume_text, job_description)
 
-    return ResumeResponse(match_score=score, match_level=level)
+    return ResumeResponse(
+        match_score=score,
+        match_level=level
+    )
