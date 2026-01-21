@@ -1,7 +1,7 @@
-from sklearn.metrics.pairwise import cosine_similarity
 from pypdf import PdfReader
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-from app.model import get_model
 
 def extract_text_from_pdf(pdf_path: str) -> str:
     reader = PdfReader(pdf_path)
@@ -10,14 +10,19 @@ def extract_text_from_pdf(pdf_path: str) -> str:
         text += page.extract_text() or ""
     return text.strip()
 
+
 def calculate_similarity(resume_text: str, job_text: str):
-    # ✅ load model only when needed (saves memory)
-    model = get_model()
+    """
+    Lightweight similarity using TF-IDF + Cosine Similarity
+    ✅ Best for Render free tier (no RAM crash)
+    """
 
-    resume_embedding = model.encode([resume_text])
-    job_embedding = model.encode([job_text])
+    docs = [resume_text, job_text]
+    vectorizer = TfidfVectorizer(stop_words="english")
 
-    similarity = cosine_similarity(resume_embedding, job_embedding)[0][0]
+    tfidf_matrix = vectorizer.fit_transform(docs)
+
+    similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
     score = round(similarity * 100, 2)
 
     if score >= 80:

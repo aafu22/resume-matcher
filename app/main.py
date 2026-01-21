@@ -6,9 +6,8 @@ import shutil
 from app.schemas import ResumeRequest, ResumeResponse
 from app.utils import calculate_similarity, extract_text_from_pdf
 
-app = FastAPI(title="AI Resume Screening API")
+app = FastAPI(title="AI Resume Screening API (TF-IDF Version)")
 
-# ✅ allow frontend connection (Streamlit)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # ok for demo
@@ -21,7 +20,7 @@ app.add_middleware(
 def home():
     return {"message": "Resume Matching API is running ✅"}
 
-# ✅ Text-based endpoint
+# ✅ Text matching endpoint
 @app.post("/match_resume", response_model=ResumeResponse)
 def match_resume(data: ResumeRequest):
     score, level = calculate_similarity(data.resume_text, data.job_description)
@@ -31,7 +30,7 @@ def match_resume(data: ResumeRequest):
         match_level=level
     )
 
-# ✅ PDF-based endpoint
+# ✅ PDF matching endpoint
 @app.post("/match_resume_pdf", response_model=ResumeResponse)
 async def match_resume_pdf(
     job_description: str = Form(...),
@@ -46,6 +45,12 @@ async def match_resume_pdf(
         shutil.copyfileobj(resume_file.file, buffer)
 
     resume_text = extract_text_from_pdf(file_path)
+
+    # ✅ delete temp file after reading
+    try:
+        os.remove(file_path)
+    except:
+        pass
 
     score, level = calculate_similarity(resume_text, job_description)
 

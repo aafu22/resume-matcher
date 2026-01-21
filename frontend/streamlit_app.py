@@ -8,13 +8,11 @@ st.set_page_config(page_title="AI Resume Matcher", page_icon="📄", layout="cen
 st.title("📄 AI Resume Screening / Job Matching System")
 st.write("Upload your resume (PDF) and paste the job description to get a match score.")
 
-# ✅ Keep uploaded file in session
 if "resume_file" not in st.session_state:
     st.session_state.resume_file = None
 
 uploaded_file = st.file_uploader("Upload Resume (PDF)", type=["pdf"], key="resume_uploader")
 
-# ✅ If file uploaded, store it
 if uploaded_file is not None:
     st.session_state.resume_file = uploaded_file
     st.success(f"✅ Uploaded: {uploaded_file.name}")
@@ -34,7 +32,6 @@ if st.button("✅ Match Resume"):
                 files = {
                     "resume_file": (resume_file.name, resume_file.getvalue(), "application/pdf")
                 }
-
                 data = {
                     "job_description": job_description
                 }
@@ -43,8 +40,8 @@ if st.button("✅ Match Resume"):
 
                 if response.status_code == 200:
                     result = response.json()
-
                     st.success("✅ Matching Completed!")
+
                     st.metric("Match Score (%)", result["match_score"])
                     st.write(f"### Match Level: **{result['match_level']}**")
 
