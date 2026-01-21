@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # ✅ If running locally
-FASTAPI_URL = "https://resume-matcher-c1rv.onrender.com/match_resume_pdf"
+FASTAPI_URL = "http://127.0.0.1:8000/match_resume_pdf"
 
 # ✅ After deploying backend on Render, change to:
 # FASTAPI_URL = "https://your-backend.onrender.com/match_resume_pdf"
