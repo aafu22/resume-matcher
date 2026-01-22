@@ -28,4 +28,5 @@ It helps automate basic resume screening using NLP similarity.
 
 ### 1) Clone the repository
 git clone https://github.com/aafu22/resume-matcher
+
 cd resume-matcher
