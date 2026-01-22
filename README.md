@@ -30,3 +30,20 @@ It helps automate basic resume screening using NLP similarity.
 git clone https://github.com/aafu22/resume-matcher
 
 cd resume-matcher
+
+2) Install dependencies
+python -m pip install -r requirements.txt
+
+3) Run backend (FastAPI)
+python -m uvicorn app.main:app --reload
+
+Backend runs at:
+http://127.0.0.1:8000/docs
+
+4) Run frontend (Streamlit)
+cd frontend
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+
+Frontend runs at:
+http://localhost:8501
